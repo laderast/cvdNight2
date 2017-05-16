@@ -1,0 +1,46 @@
+---
+title: "Machine Learning on Your Cohort"
+author: "Ted Laderas (and you!)"
+date: "May 16, 2017"
+output: html_document
+---
+
+In this assignment, you will run multiple machine learning algorithms on your cohort to see if you can improve on the regular logistic regression process. You will use this Markdown document to record your observations and code.
+
+The first step is to load the data (in the `/data/` folder). Since we are training first, we'll load our training data here.
+
+```{r}
+##Write your data loading code here
+##Do some EDA as well and show any relevant plots
+library(data.table)
+trainDataFull <- fread("data/fullDataTrainSet.csv")
+testDataFull <- fread("data/fullDataTestSet.csv")
+
+##Some questions to think about: What is the distribution of cvd in the training set and the test set? Are there any concerns?
+```
+
+Based on your reading of the dataset, you may want to select some features to include and some to exclude. (Hint: you can use the `select()` command from the `dplyr` package to select particular features.)
+
+```{r}
+
+```
+
+Now you can train your learner on the training data. What is the class that we're training on? How do we do this? Adapt the code that we used on the Iris dataset here. 
+
+```{r}
+##Write your lda code here.
+```
+
+Look at any LDA diagnostic plots. Are there any issues with the LDA analysis? How good is the discriminant?
+
+```{r}
+##write any plotting code here.
+```
+
+Evaluate your learner on the test set. How well did it do? Does the test data give you any confidence that you built a good learner? What is your interpretation of the results? Do you think the problem is an easy or hard one? How did the learner do?
+
+```{r}
+##write any evaluation code here.
+```
+
+If you have time. Compare your results on classifying the test set with both algorithms (LDA and Classification Trees). Is there a way to see compare the misclassifcations? Did both algorithms do equally well?
