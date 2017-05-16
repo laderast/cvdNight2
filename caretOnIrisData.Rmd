@@ -109,7 +109,7 @@ classPredLDA <- predict(ldaIris, newdata=testData)
 data.frame(classPredLDA, truth=testData$Species)
 
 #calculate confusion Matrix and other measures of accuracy
-confMatLDA <- confusionMatrix(testData$Species, classPredLDA)
+confMatLDA <- confusionMatrix(testData$Species, classPredLDA, positive = "Y")
 
 #Show everything from `confusionMatrix`
 confMatLDA
@@ -142,9 +142,9 @@ data.frame(truth=testData$Species,logit=classPredLogit, LDA=classPredLDA, CART=c
 Here we compare the accuracies of our models.
 
 ```{r}
-confMatCart <- confusionMatrix(classPredCart, testData$Species)
-confMatLogit <- confusionMatrix(classPredLogit, testData$Species)
-confMatCtree <- confusionMatrix(classPredCtree, testData$Species)
+confMatCart <- confusionMatrix(classPredCart, testData$Species, positive = "Y")
+confMatLogit <- confusionMatrix(classPredLogit, testData$Species, positive = "Y")
+confMatCtree <- confusionMatrix(classPredCtree, testData$Species, positive = "Y")
 
 accuracyComparison = rbind(logit = confMatLogit$overall,
                        LDA = confMatLDA$overall,
