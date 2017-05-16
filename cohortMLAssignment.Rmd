@@ -16,31 +16,51 @@ library(data.table)
 trainDataFull <- fread("data/fullDataTrainSet.csv")
 testDataFull <- fread("data/fullDataTestSet.csv")
 
+##put your cohort selection filter here
+trainDataFullCohort <- trainDataFull %>% filter(race="Black/AfAm")
+testDataFullCohort <- testDataFull %>% filter(race="Black/AfAm")
+
+
 ##Some questions to think about: What is the distribution of cvd in the training set and the test set? Are there any concerns?
 ```
 
-Based on your reading of the dataset, you may want to select some features to include and some to exclude. (Hint: you can use the `select()` command from the `dplyr` package to select particular features.)
+## Initial Model
 
-```{r}
-
-```
+Specify your model (outcome variable and predictor variables). Think very carefully about whether variables have a relationship with each other before you add them to the model.
 
 Now you can train your learner on the training data. What is the class that we're training on? How do we do this? Adapt the code that we used on the Iris dataset here. 
+
+```{r}
+##Write your training code here.
+```
+
+## Initial Model Predictions
+
+Now predict on the test set.
 
 ```{r}
 ##Write your lda code here.
 ```
 
-Look at any LDA diagnostic plots. Are there any issues with the LDA analysis? How good is the discriminant?
+## Which method did the best?
+
+Compare accuracies if you are running multiple methods here.
 
 ```{r}
 ##write any plotting code here.
+
 ```
+
+## Get Confused
+
+Look at the confusion matrix here and compare the kinds of mistakes each method makes here.
 
 Evaluate your learner on the test set. How well did it do? Does the test data give you any confidence that you built a good learner? What is your interpretation of the results? Do you think the problem is an easy or hard one? How did the learner do?
 
 ```{r}
-##write any evaluation code here.
+##write your confusion matrix code here.
 ```
 
-If you have time. Compare your results on classifying the test set with both algorithms (LDA and Classification Trees). Is there a way to see compare the misclassifcations? Did both algorithms do equally well?
+## Score Your Learners and Cohort
+
+Add your findings to the Google Sheet here: http://bit.ly/2qOmwSl

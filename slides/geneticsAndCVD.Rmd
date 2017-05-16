@@ -1,0 +1,73 @@
+---
+title: "Genetics and Cardiovascular Risk"
+author: "Ted Laderas"
+date: "5/15/2017"
+output: slidy_presentation
+---
+
+## DNA Structure
+
+<img src="image/dnaStructure.jpg" height = "600px">
+
+https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA
+
+## What is a SNP?
+
+A SNP (Single Nucelotide Polymorphism) is a single base-pair location in the genome where we observe variation across people.
+
+We need two pieces of information to locate a snp: the chromosome it's on, and the linear position on the chromosome.
+
+<img src="image/snpDavidHall.png" height="600px">
+
+Snp Image by David Hall / CC Licensed
+
+## Parents and genetics
+
+Because we have two chromosomes (one from each parent), we will have two copies (values) at any SNP. Each of these copies is called an *allele*.
+
+For example, if my dad gave me a copy (allele) with an A, and my mom gave me a copy (allele) with a G, my genotype at that SNP location would be AG.
+
+For this exercise, we've simplified the genotypes. Try and figure out how. Why is this unrealistic?
+
+## SNP Frequencies
+
+We classify the different genotypes based on how frequently they are observed in the population. 
+
+Nomenclature: if a genotype is observed most of the time, we term that genotype the wild type. The other genotype is called the variant, and by definition occurs less than the wild type. 
+
+Based on population studies, we can see that genotype frequencies vary by racial population. Is this reflected in the genotype data?
+
+![Snppedia Snapshot](image/snpFrequencies.png)
+
+## SNPs are associated with disease
+
+A number of SNPs have been associated with CVD. Having a variant can increase your overall risk of having CVD.
+
+A number of these SNPs are associated with genes involving lipid synthesis. 
+
+<img src="image/lipidPathway.png" width="800px">
+
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf
+
+
+## SNPs of Interest in our data
+
+These first 2 snps are on the same chromosome and so I will model them as having identical risk, and having both does not increase risk. I am limiting myself to the homozygous variants (excluding the heterozygous variants) in order to simplify things.
+
+These are real SNPs, but I have changed their function in our dataset.
+
+[rs10757278](http://snpedia.com/index.php/Rs10757278) (Chr 9, 22124478). WT: (A;A) homozygous variant: (G;G) 
+
+[rs1333049](http://snpedia.com/index.php/Rs1333049) (Chr 9, 22125504). WT: (G;G) homozygous variant: (C;C) 
+
+[rs4665058](http://snpedia.com/index.php/Rs4665058), (Chr 2, 159333698) WT:(C;C) Homozygous Variant: (A;A) 
+
+[rs8055236](https://www.snpedia.com/index.php/Rs8055236) (Chr 16, 83178793) WT: (T;T) Homozygous Variant: (G;G) 
+
+## Questions about the genomic data
+
+1) How many genotypes exist in the data? That is, given SNP1, SNP2, SNP3, SNP4, what combinations of these exist in the data? Are there combinations that you never see?
+
+2) Are any variables associated the individual genotypes? Does this affect whether you include them in your model?
+
+3) Are there any genotypes that seem to change outcome overall?

@@ -5,16 +5,21 @@ date: "May 16, 2017"
 output: html_document
 ---
 
-In this Markdown document, I show how to run multiple machine learning methods on the iris dataset using the `caret` package. `caret` has a unified interface to over 140 modeling and predictive techniques, so it will be ideal for us to compare our methods.
+In this Markdown document, I show how to run multiple machine learning methods on the iris dataset using the `caret` package. `caret` has a unified interface to over 140 modeling and predictive techniques, so it will be ideal for us to compare our methods. There is way more information about using `caret` here: https://www.r-project.org/nosvn/conferences/useR-2013/Tutorials/kuhn/user_caret_2up.pdf
 
 Before you do anything else, make sure that you have the following packages installed:
 
 ```{r warning=FALSE, message=FALSE}
 library(caret)
 library(dplyr)
+library(rpart)
+library(ranger)
+library(e1071)
 ```
 
 Your number one step is to try using `knitr` to build this document and view the output. Use the `Knit HTML` button right above the source window. For the workshop, you will be modifying two different Markdown documents (`ldaAssignment.Rmd` and `CTreeAssignment.Rmd`) to share your work.
+
+## Some Simple Data Transformation
 
 The first step is to reduce the Iris dataset to a 2-class problem, to make it easier to understand. We'll use this dataset on the Classification Tree algorithm as well.
 
@@ -33,24 +38,26 @@ iris2 <- iris %>% filter(Species %in% c("versicolor", "virginica")) %>% mutate(S
 summary(iris2)
 ```
 
-Here we subset the data by building a training set to train our learner, and holding out part of the  data to assess the performance on the dataset. Note that you won't have to do this on the cvdDataset, since we've already separated the two out.
+## Building Test and Train Datasets
+
+Here we subset the data by building a training set to train our learner, and holding out part of the  data to assess the performance on the dataset. Note that you won't have to do this on the cvd dataset, since we've already separated the two out for you. 
 
 ```{r}
-dataSize <- nrow(iris2)
-#build a training set of 80% of the testSet
-trainSetSize <- floor(0.8 * dataSize)
+#grab indices of the dataset that represent 85% of the data
+trainingIndices <- createDataPartition(y = iris2$Species, p=.85,
+                                       list=FALSE)
 
-#build our training set, by sampling from the number of rows randomly to select rows
-trainDataIndices <- sample(1:dataSize, size=trainSetSize)
+#show the first few training indices
+trainingIndices[1:10]
 
 #select the rows
-trainData <- iris2[trainDataIndices,]
+trainData <- iris2[trainingIndices,]
 #confirm the number of rows should be 80
 nrow(trainData)
 
 #build our test set using the R-indexing
 #using the "-" operator
-testData <- iris2[-trainDataIndices,]
+testData <- iris2[-trainingIndices,]
 
 #confirm the number of rows (should be 20)
 nrow(testData)
@@ -58,69 +65,90 @@ nrow(testData)
 
 In summary: our training data has `r nrow(trainData)` samples and our training set has `r nrow(testData)` samples.
 
-#Running the LDA algorithm
+#Training Your Machine Learner
 
-Here I run LDA on the `iris` dataset using the `lda()` function in the MASS package. I use the formula interface to specify the class. 
+Here we'll train multiple machine learning algorithms using the `train` function.
 
-```{r}
-#load MASS library (needed for lda())
-library(MASS)
-#Here, we use the formula interface to specify what the classes are and what the features are.
-#The formula should be: 
-#Classes = Species
-#Features = everything else (specified using ".")
-ldaIris <- lda(Species ~ . , data=trainData)
+Before you get started, you should have selected your cohort.
 
-##If we just wanted to run the LDA using Petal.Length and Petal.Width, we'd run it like this:
-#ldaIris2 <- lda(Species ~ Petal.Length + Petal.Width, data=trainData)
-```
+Think very carefully before you add a predictive feature/variable. Using all features will actually impact the interpretability of your model. You need to justify the inclusion of each variable. Here I've included only `Sepal.Width` and `Petal.Width` because you could argue that `Sepal.Length` and `Sepal.Width` might be providing the same information.
 
-Here we plot the LDA object, in order to assess how well it discriminates between the two classes. This is a conditional histogram that shows the value of each sample when projected onto the linear discriminant. Ideally, we want to have all the samples for one class on one side of the histogram and all the samples on the other side of the histogram on the other. Is that the case for this dataset?
+A full list of machine learners is available here: http://topepo.github.io/caret/available-models.html
+
+I'll show how to use three modeling methods here.  
+
+  + `lda` - linear discriminant analysis, 
+  + `rpart` - Classification and regression trees 
+  + `ranger` - Random Forests.
 
 ```{r}
-plot(ldaIris)
+#train linear discriminant analysis method
+ldaIris <- train(Species ~ Sepal.Width + Petal.Width, method= "lda", data=trainData)
+
+#train classification and regression tree
+cartIris <- train(Species ~ Sepal.Width + Petal.Width, method= "rpart", data=trainData)
+
+#train randomForest
+rfIris <- train(Species ~ Sepal.Width + Petal.Width, method= "ranger", data=trainData)
 ```
 
-Let's evaluate the discriminant using `predict()` on the test set. What is our percent misclassified on the test set? How do we calculate it? (Hint: you can use the `diag()` function to just grab the values from the diagonals, which is probably useful).
+## Assessing the models on the Test Set
 
 ```{r}
-#Evaluate the class predictions on the training data
-classPred <- predict(ldaIris, testData)
-classPred <- classPred$class
-
-#show the 
-confusionMatrix <- table(testData$Species, classPred)
-confusionMatrix
+plot(cartIris)
 ```
 
-**Suggested Exercise**: Try running the LDA on the full iris dataset. How well does the LDA work on this problem? How does the output differ?
+Now that we have our models trained, we can evaluate them on our test dataset. To do this, we use the `predict` function, and pass both our trained learner `ldaIris` and our `testData` into `predict`.
 
-
-
-#Running the Classification Tree algorithm
-
-We'll use the `tree` package to build our classification trees on the training data.
+Question: why don't we assess our models on the training data? What are the dangers of doing so?
 
 ```{r}
-library(tree)
+#Predict species on test data
+classPredLDA <- predict(ldaIris, newdata=testData)
 
-trainTree <- tree(Species ~ ., data=trainData)
+#Compare predictions directly with the truth
+data.frame(classPredLDA, truth=testData$Species)
+
+#calculate confusion Matrix and other measures of accuracy
+confMatLDA <- confusionMatrix(testData$Species, classPredLDA)
+
+#Show everything from `confusionMatrix`
+confMatLDA
+
+#access confusion matrix directly
+confMatLDA$table
+
+#Show accuracy values
+confMatLDA$overall
+
+#Show class agreement values
+confMatLDA$byClass
 ```
 
-Here we plot the tree that results from the training the tree. Is there anything that you notice? The decision tree basically tries to separate the data into different classes by partitioning the data. Anything that meets the statement at the top of the branch becomes classified with the branch at the right of the assignent.
+## So which algorithm did best?
+
+Let's run our predictions on the other learners as well, and compare accuracies:
 
 ```{r}
-#note that you have to use the text line after the plot command. Otherwise, the plot has no labels!
-plot(trainTree)
-text(trainTree, all=T)
+classPredCart <- predict(cartIris, newdata = testData)
+classPredRF <- predict(rfIris, newdata = testData)
+
+#compare all the predictions directly
+#were there any rows where the predictions didn't match?
+data.frame(truth=testData$Species, classPredLDA, classPredCart, classPredLDA)
 ```
 
-Our tree seems to be a little too complicated (it is finding partitions within the versicolor population), but let's try it on the test dataset. Let's look at the performance of the tree on our test data. What is the percent misclassified?
+## Comparing Accuracies of our models
+
+Here we compare the accuracies of our models.
 
 ```{r}
-#note that the predict() interface is different for tree objects
-testResults <- predict(trainTree, newdata=testData, type="class")
-table(testData$Species, testResults)
-```
+confMatCart <- confusionMatrix(classPredCart, testData$Species)
+confMatRF <- confusionMatrix(classPredRF, testData$Species)
 
-**Suggested Exercise**: try running `tree()` on the full dataset. What does the tree look like? 
+accuracyComparison = rbind(LDA = confMatLDA$overall,
+                       CART = confMatCart$overall,
+                       RF = confMatCart$overall)
+
+accuracyComparison
+```
