@@ -33,9 +33,9 @@ For this exercise, we've simplified the genotypes. Try and figure out how. Why i
 
 We classify the different genotypes based on how frequently they are observed in the population. 
 
-Nomenclature: if a genotype is observed most of the time, we term that genotype the wild type. The other genotype is called the variant, and by definition occurs less than the wild type. 
+Nomenclature: if a genotype is observed most of the time, we term that genotype the *wild type* (WT). The other genotype is called the *variant*, and by definition occurs less than the wild type. 
 
-Based on population studies, we can see that genotype frequencies vary by racial population. Is this reflected in the genotype data?
+Based on population studies, we can see that genotype frequencies vary by racial population. Is this reflected in our genotype data?
 
 ![Snppedia Snapshot](image/snpFrequencies.png)
 
@@ -71,3 +71,5 @@ These are real SNPs, but I have changed their function in our dataset.
 2) Are any variables associated the individual genotypes? Does this affect whether you include them in your model?
 
 3) Are there any genotypes that seem to change outcome overall?
+
+4) Run the whole dataset with genotypes - you don't have enough info for the cohorts.

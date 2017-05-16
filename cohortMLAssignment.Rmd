@@ -12,13 +12,18 @@ The first step is to load the data (in the `/data/` folder). Since we are traini
 ```{r}
 ##Write your data loading code here
 ##Do some EDA as well and show any relevant plots
+library(caret)
+library(dplyr)
+library(rpart)
+library(ranger)
+library(e1071)
 library(data.table)
 trainDataFull <- fread("data/fullDataTrainSet.csv")
 testDataFull <- fread("data/fullDataTestSet.csv")
 
 ##put your cohort selection filter here
-trainDataFullCohort <- trainDataFull %>% filter(race="Black/AfAm")
-testDataFullCohort <- testDataFull %>% filter(race="Black/AfAm")
+trainDataFullCohort <- trainDataFull %>% filter(race=="Black/AfAm")
+testDataFullCohort <- testDataFull %>% filter(race=="Black/AfAm")
 
 
 ##Some questions to think about: What is the distribution of cvd in the training set and the test set? Are there any concerns?
@@ -64,3 +69,4 @@ Evaluate your learner on the test set. How well did it do? Does the test data gi
 ## Score Your Learners and Cohort
 
 Add your findings to the Google Sheet here: http://bit.ly/2qOmwSl
+

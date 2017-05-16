@@ -13,7 +13,7 @@ Before you do anything else, make sure that you have the following packages inst
 library(caret)
 library(dplyr)
 library(rpart)
-library(ranger)
+library(party)
 library(e1071)
 ```
 
@@ -73,15 +73,19 @@ Before you get started, you should have selected your cohort.
 
 Think very carefully before you add a predictive feature/variable. Using all features will actually impact the interpretability of your model. You need to justify the inclusion of each variable. Here I've included only `Sepal.Width` and `Petal.Width` because you could argue that `Sepal.Length` and `Sepal.Width` might be providing the same information.
 
-A full list of machine learners is available here: http://topepo.github.io/caret/available-models.html
+A full list of machine learning methods in `caret` is available here: http://topepo.github.io/caret/available-models.html Note that you will also have to install the corresponding packages listed for that method.
 
 I'll show how to use three modeling methods here.  
 
   + `lda` - linear discriminant analysis, 
   + `rpart` - Classification and regression trees 
-  + `ranger` - Random Forests.
+  + `ctree` - Random Forests.
 
 ```{r}
+#our straw man: logistic regression
+logitIris <- train(Species ~ Sepal.Width + Petal.Width, method="glm", family="binomial",
+                   data=trainData)
+
 #train linear discriminant analysis method
 ldaIris <- train(Species ~ Sepal.Width + Petal.Width, method= "lda", data=trainData)
 
@@ -89,14 +93,10 @@ ldaIris <- train(Species ~ Sepal.Width + Petal.Width, method= "lda", data=trainD
 cartIris <- train(Species ~ Sepal.Width + Petal.Width, method= "rpart", data=trainData)
 
 #train randomForest
-rfIris <- train(Species ~ Sepal.Width + Petal.Width, method= "ranger", data=trainData)
+ctreeIris <- train(Species ~ Sepal.Width + Petal.Width, method= "ctree", data=trainData)
 ```
 
 ## Assessing the models on the Test Set
-
-```{r}
-plot(cartIris)
-```
 
 Now that we have our models trained, we can evaluate them on our test dataset. To do this, we use the `predict` function, and pass both our trained learner `ldaIris` and our `testData` into `predict`.
 
@@ -131,11 +131,12 @@ Let's run our predictions on the other learners as well, and compare accuracies:
 
 ```{r}
 classPredCart <- predict(cartIris, newdata = testData)
-classPredRF <- predict(rfIris, newdata = testData)
+classPredCtree <- predict(ctreeIris, newdata = testData)
+classPredLogit <- predict(logitIris, newdata = testData)
 
 #compare all the predictions directly
 #were there any rows where the predictions didn't match?
-data.frame(truth=testData$Species, classPredLDA, classPredCart, classPredLDA)
+data.frame(truth=testData$Species,logit=classPredLogit, LDA=classPredLDA, CART=classPredCart, CTREE=classPredCtree)
 ```
 
 ## Comparing Accuracies of our models
@@ -144,9 +145,11 @@ Here we compare the accuracies of our models.
 
 ```{r}
 confMatCart <- confusionMatrix(classPredCart, testData$Species)
-confMatRF <- confusionMatrix(classPredRF, testData$Species)
+confMatLogit <- confusionMatrix(classPredLogit, testData$Species)
+confMatCtree <- confusionMatrix(classPredCtree, testData$Species)
 
-accuracyComparison = rbind(LDA = confMatLDA$overall,
+accuracyComparison = rbind(logit = confMatLogit$overall,
+                       LDA = confMatLDA$overall,
                        CART = confMatCart$overall,
                        RF = confMatCart$overall)
 
