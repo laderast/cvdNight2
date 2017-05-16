@@ -1,0 +1,126 @@
+---
+title: "ML on the Iris Dataset"
+author: "Ted Laderas"
+date: "May 16, 2017"
+output: html_document
+---
+
+In this Markdown document, I show how to run multiple machine learning methods on the iris dataset using the `caret` package. `caret` has a unified interface to over 140 modeling and predictive techniques, so it will be ideal for us to compare our methods.
+
+Before you do anything else, make sure that you have the following packages installed:
+
+```{r}
+library(caret)
+library(dplyr)
+```
+
+Your number one step is to try using `knitr` to build this document and view the output. Use the `Knit HTML` button right above the source window. For the workshop, you will be modifying two different Markdown documents (`ldaAssignment.Rmd` and `CTreeAssignment.Rmd`) to share your work.
+
+The first step is to reduce the Iris dataset to a 2-class problem, to make it easier to understand. We'll use this dataset on the Classification Tree algorithm as well.
+
+```{r message=FALSE}
+#Here I set the random seed so I can reproduce all of the random subsetting
+set.seed(11111)
+
+#load the iris dataset
+data(iris)
+
+#select only "versicolor" and "virginica" species from data
+#we need to recast Species as a factor to drop the "versicolor" level
+iris2 <- iris %>% filter(Species %in% c("versicolor", "virginica")) %>% mutate(Species = factor(Species))
+
+#confirm that we did the subsetting correct
+summary(iris2)
+```
+
+Here we subset the data by building a training set to train our learner, and holding out part of the data to assess the performance on the dataset. Note that you won't have to do this on the Breast Cancer Dataset, since we've already separated the two out.
+
+```{r}
+dataSize <- nrow(iris2)
+#build a training set of 80% of the testSet
+trainSetSize <- floor(0.8 * dataSize)
+
+#build our training set, by sampling from the number of rows randomly to select rows
+trainDataIndices <- sample(1:dataSize, size=trainSetSize)
+
+#select the rows
+trainData <- iris2[trainDataIndices,]
+#confirm the number of rows should be 80
+nrow(trainData)
+
+#build our test set using the R-indexing
+#using the "-" operator
+testData <- iris2[-trainDataIndices,]
+
+#confirm the number of rows (should be 20)
+nrow(testData)
+```
+
+In summary: our training data has `r nrow(trainData)` samples and our training set has `r nrow(testData)` samples.
+
+#Running the LDA algorithm
+
+Here I run LDA on the `iris` dataset using the `lda()` function in the MASS package. I use the formula interface to specify the class. 
+
+```{r}
+#load MASS library (needed for lda())
+library(MASS)
+#Here, we use the formula interface to specify what the classes are and what the features are.
+#The formula should be: 
+#Classes = Species
+#Features = everything else (specified using ".")
+ldaIris <- lda(Species ~ . , data=trainData)
+
+##If we just wanted to run the LDA using Petal.Length and Petal.Width, we'd run it like this:
+#ldaIris2 <- lda(Species ~ Petal.Length + Petal.Width, data=trainData)
+```
+
+Here we plot the LDA object, in order to assess how well it discriminates between the two classes. This is a conditional histogram that shows the value of each sample when projected onto the linear discriminant. Ideally, we want to have all the samples for one class on one side of the histogram and all the samples on the other side of the histogram on the other. Is that the case for this dataset?
+
+```{r}
+plot(ldaIris)
+```
+
+Let's evaluate the discriminant using `predict()` on the test set. What is our percent misclassified on the test set? How do we calculate it? (Hint: you can use the `diag()` function to just grab the values from the diagonals, which is probably useful).
+
+```{r}
+#Evaluate the class predictions on the training data
+classPred <- predict(ldaIris, testData)
+classPred <- classPred$class
+
+#show the 
+confusionMatrix <- table(testData$Species, classPred)
+confusionMatrix
+```
+
+**Suggested Exercise**: Try running the LDA on the full iris dataset. How well does the LDA work on this problem? How does the output differ?
+
+
+
+#Running the Classification Tree algorithm
+
+We'll use the `tree` package to build our classification trees on the training data.
+
+```{r}
+library(tree)
+
+trainTree <- tree(Species ~ ., data=trainData)
+```
+
+Here we plot the tree that results from the training the tree. Is there anything that you notice? The decision tree basically tries to separate the data into different classes by partitioning the data. Anything that meets the statement at the top of the branch becomes classified with the branch at the right of the assignent.
+
+```{r}
+#note that you have to use the text line after the plot command. Otherwise, the plot has no labels!
+plot(trainTree)
+text(trainTree, all=T)
+```
+
+Our tree seems to be a little too complicated (it is finding partitions within the versicolor population), but let's try it on the test dataset. Let's look at the performance of the tree on our test data. What is the percent misclassified?
+
+```{r}
+#note that the predict() interface is different for tree objects
+testResults <- predict(trainTree, newdata=testData, type="class")
+table(testData$Species, testResults)
+```
+
+**Suggested Exercise**: try running `tree()` on the full dataset. What does the tree look like? 
