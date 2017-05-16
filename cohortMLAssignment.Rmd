@@ -22,8 +22,8 @@ trainDataFull <- fread("data/fullDataTrainSet.csv")
 testDataFull <- fread("data/fullDataTestSet.csv")
 
 ##put your cohort selection filter here
-trainDataFullCohort <- trainDataFull %>% filter(race=="Black/AfAm")
-testDataFullCohort <- testDataFull %>% filter(race=="Black/AfAm")
+trainDataFullCohort <- trainDataFull %>% filter(age > 55)
+testDataFullCohort <- testDataFull %>% filter(age > 55)
 
 
 ##Some questions to think about: What is the distribution of cvd in the training set and the test set? Are there any concerns?

@@ -13,7 +13,7 @@ https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA
 
 ## What is a SNP?
 
-A SNP (Single Nucelotide Polymorphism) is a single base-pair location in the genome where we observe variation across people.
+A SNP (Single Nucelotide Polymorphism) is a single base-pair location in the genome where we observe variation across a population.
 
 We need two pieces of information to locate a snp: the chromosome it's on, and the linear position on the chromosome.
 

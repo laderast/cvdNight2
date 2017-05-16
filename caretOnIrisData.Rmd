@@ -79,7 +79,6 @@ I'll show how to use three modeling methods here.
 
   + `lda` - linear discriminant analysis, 
   + `rpart` - Classification and regression trees 
-  + `ctree` - Random Forests.
 
 ```{r}
 #our straw man: logistic regression
@@ -92,8 +91,6 @@ ldaIris <- train(Species ~ Sepal.Width + Petal.Width, method= "lda", data=trainD
 #train classification and regression tree
 cartIris <- train(Species ~ Sepal.Width + Petal.Width, method= "rpart", data=trainData)
 
-#train randomForest
-ctreeIris <- train(Species ~ Sepal.Width + Petal.Width, method= "ctree", data=trainData)
 ```
 
 ## Assessing the models on the Test Set
@@ -131,12 +128,11 @@ Let's run our predictions on the other learners as well, and compare accuracies:
 
 ```{r}
 classPredCart <- predict(cartIris, newdata = testData)
-classPredCtree <- predict(ctreeIris, newdata = testData)
 classPredLogit <- predict(logitIris, newdata = testData)
 
 #compare all the predictions directly
 #were there any rows where the predictions didn't match?
-data.frame(truth=testData$Species,logit=classPredLogit, LDA=classPredLDA, CART=classPredCart, CTREE=classPredCtree)
+data.frame(truth=testData$Species,logit=classPredLogit, LDA=classPredLDA, CART=classPredCart)
 ```
 
 ## Comparing Accuracies of our models
@@ -150,8 +146,8 @@ confMatCtree <- confusionMatrix(classPredCtree, testData$Species)
 
 accuracyComparison = rbind(logit = confMatLogit$overall,
                        LDA = confMatLDA$overall,
-                       CART = confMatCart$overall,
-                       RF = confMatCart$overall)
+                       CART = confMatCart$overall
+                    )
 
 accuracyComparison
 ```
