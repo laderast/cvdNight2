@@ -1,0 +1,173 @@
+---
+title: "Machine Learning on Your Cohort"
+author: "Ted Laderas (and you!)"
+date: "May 16, 2017"
+output: html_document
+---
+
+In this assignment, you will run multiple machine learning algorithms on your cohort to see if you can improve on the regular logistic regression process. You will use this Markdown document to record your observations and code.
+
+The first step is to load the data (in the `/data/` folder). Since we are training first, we'll load our training data here.
+
+```{r}
+##Write your data loading code here
+##Do some EDA as well and show any relevant plots
+library(data.table)
+library(caret)
+library(dplyr)
+library(rpart)
+library(party)
+library(e1071)
+trainDataFull <- fread("data/fullDataTrainSet.csv")
+testDataFull <- fread("data/fullDataTestSet.csv")
+
+trainGenoData <- fread("data/genoDataTrainSet.csv")
+testGenoData <- fread("data/genoDataTestSet.csv")
+
+##put your cohort selection filter here
+trainDataFullCohort <- trainDataFull %>% filter(age > 55)
+testDataFullCohort <- testDataFull %>% filter(age > 55)
+
+nrow(trainDataFullCohort)
+table(trainDataFullCohort$cvd)
+
+##Some questions to think about: What is the distribution of cvd in the training set and the test set? Are there any concerns?
+```
+
+## Initial Model
+
+Specify your model (outcome variable and predictor variables). Think very carefully about whether variables have a relationship with each other before you add them to the model.
+
+Now you can train your learner on the training data. What is the class that we're training on? How do we do this? Adapt the code that we used on the Iris dataset here. 
+
+```{r}
+#run Logistic Regression
+logitFull <- train(cvd ~ numAge + tchol + htn + gender, method="glm", family="binomial",
+                   data = trainDataFullCohort)
+
+#run LDA
+ldaFull <- train(cvd ~ numAge + tchol + htn + gender, method= "lda", data=trainDataFullCohort)
+
+#train classification and regression tree
+cartFull <- train(cvd ~ numAge + tchol + htn + gender , method= "rpart", data=trainDataFullCohort)
+
+
+
+##Write your training code here.
+```
+
+## Initial Model Predictions
+
+Now predict on the test set.
+
+```{r}
+predLogit <- predict(logitFull, newdata = testDataFullCohort)
+
+confLogit <- confusionMatrix(predLogit, testDataFullCohort$cvd, positive="Y")
+
+predLDA <- predict(ldaFull, newdata = testDataFullCohort)
+
+confLDA <- confusionMatrix(predLDA, testDataFullCohort$cvd)
+
+predCART <- predict(cartFull, newdata = testDataFullCohort)
+
+confCART <- confusionMatrix(predCART, testDataFullCohort$cvd)
+
+
+
+
+##Write your lda code here.
+```
+
+## Which method did the best?
+
+Compare accuracies if you are running multiple methods here.
+
+```{r}
+##write any plotting code here.
+accuracyComparison = rbind(logit = confLogit$overall,
+                       LDA = confLDA$overall,
+                       CART = confCART$overall
+                      )
+
+confLogit$byClass
+
+accuracyComparison
+```
+
+## Get Confused
+
+Look at the confusion matrix here and compare the kinds of mistakes each method makes here.
+
+Evaluate your learner on the test set. How well did it do? Does the test data give you any confidence that you built a good learner? What is your interpretation of the results? Do you think the problem is an easy or hard one? How did the learner do?
+
+```{r}
+##write your confusion matrix code here.
+```
+
+
+## Genetics Model
+
+Specify your model (outcome variable and predictor variables). Think very carefully about whether variables have a relationship with each other before you add them to the model.
+
+Now you can train your learner on the training data. What is the class that we're training on? How do we do this? Adapt the code that we used on the Iris dataset here. 
+
+```{r}
+#run Logistic Regression
+logitFull <- train(cvd ~ tchol + htn + t2d + bmi + rs8055236, method="glm", family="binomial",
+                   data = trainGenoData)
+
+#run LDA
+ldaFull <- train(cvd ~ tchol + htn + t2d + bmi +  rs8055236, method= "lda", data=trainGenoData)
+
+#train classification and regression tree
+cartFull <- train(cvd ~ tchol + htn + t2d + bmi + rs8055236 , method= "rpart", data=trainGenoData)
+
+```
+
+## Initial Model Predictions
+
+Now predict on the test set.
+
+```{r}
+predLogit <- predict(logitFull, newdata = testGenoData)
+confLogit <- confusionMatrix(predLogit, testGenoData$cvd)
+
+predLDA <- predict(ldaFull, newdata = testGenoData)
+confLDA <- confusionMatrix(predLDA, testGenoData$cvd)
+
+predCART <- predict(cartFull, newdata = testGenoData)
+confCART <- confusionMatrix(predCART, testGenoData$cvd)
+
+
+##Write your lda code here.
+```
+
+## Which method did the best?
+
+Compare accuracies if you are running multiple methods here.
+
+```{r}
+##write any plotting code here.
+accuracyComparison = rbind(logit = confLogit$overall,
+                       LDA = confLDA$overall,
+                       CART = confCART$overall)
+
+accuracyComparison
+
+```
+
+## Get Confused
+
+Look at the confusion matrix here and compare the kinds of mistakes each method makes here.
+
+Evaluate your learner on the test set. How well did it do? Does the test data give you any confidence that you built a good learner? What is your interpretation of the results? Do you think the problem is an easy or hard one? How did the learner do?
+
+```{r}
+##write your confusion matrix code here.
+```
+
+
+## Score Your Learners and Cohort
+
+Add your findings to the Google Sheet here: http://bit.ly/2qOmwSl
