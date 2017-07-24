@@ -10,7 +10,7 @@ Your worksheet for tonight is available as `cohortMLAssignment.Rmd`.
 
 Data has been partitioned into multiple sets and is available in the `data` folder.
 
-##Outline for Night 2
+## Outline for Night 2
 
 ## Task 4. An Introduction to molecular biomarkers (20 min)
 **Learning Objective**: Discuss the potential impact of molecular biomarkers on a larger cohort. *Format*: [Short Lecture](slides/geneticsAndCVD.html) (15 min) + Questions (5 min)
