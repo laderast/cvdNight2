@@ -18,8 +18,8 @@ library(rpart)
 library(ranger)
 library(e1071)
 library(data.table)
-trainDataFull <- fread("data/fullDataTrainSet.csv")
-testDataFull <- fread("data/fullDataTestSet.csv")
+trainDataFull <- fread("data/fullDataTrainSet.csv", stringsAsFactors = TRUE)
+testDataFull <- fread("data/fullDataTestSet.csv", stringsAsFactors = TRUE)
 
 ##put your cohort selection filter here
 trainDataFullCohort <- trainDataFull %>% filter(age > 55)
