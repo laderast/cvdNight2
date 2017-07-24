@@ -1,5 +1,7 @@
 # CVD workshop night 2
 
+David Dorr and Ted Laderas
+
 Genetics and CVD: in `data/slides`
 
 An example of using the machine learning package `caret` is available as `caretOnIrisData.Rmd`.
@@ -18,3 +20,17 @@ Data has been partitioned into multiple sets and is available in the `data` fold
  
 ## Task 6. Discussion (60 min)
 **Learning objective**: Students give a 1 minute presentation to attempt to answer the questions: Did we do any better? Is genetic testing worth it?
+
+## Licensing and Attribution
+
+This workshop was produced with support from NIH's [Big Data to Knowledge](http://www.ohsu.edu/xd/education/schools/school-of-medicine/departments/clinical-departments/dmice/research/bd2k.cfm) (BD2K) Initiative at OHSU.
+
+Workshop Materials are Licensed under a [Creative Commons 4.0 Non Commercial License](https://creativecommons.org/licenses/by-nc/4.0/)
+
+Code is licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   
+See the License for the specific language governing permissions and limitations under the License.
